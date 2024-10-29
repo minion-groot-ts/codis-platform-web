@@ -1,0 +1,45 @@
+{
+  "app": {
+    "metadata": {
+      "name": "Codis Platform",
+      "description": "Підвищуємо ефективність тих, хто покращує життя людей"
+    },
+    "copyright": {
+      "name": "CodisLab",
+      "site": {
+        "url": "https://codislab.com",
+        "title": "Домашня сторінка CodisLab"
+      }
+    },
+    "burger": {
+      "platform": "Платформа"
+    }
+  },
+  "locale": {
+    "en": {
+      "language": "Language",
+      "name": "Eng",
+      "label": "English"
+    },
+    "uk": {
+      "language": "Мова",
+      "name": "Укр",
+      "label": "Українська"
+    }
+  },
+  "themes": {
+    "light": "Світла",
+    "system": "Системна",
+    "dark": "Темна"
+  },
+  "profile": {
+    "signas": "Ви ввійшли як",
+    "settings": "Мої налаштування",
+    "team_settings": "Team Settings",
+    "analytics": "Аналітика",
+    "system": "Система",
+    "configurations": "Конфігурації",
+    "help_and_feedback": "Довідка & Відгук",
+    "logout": "Вийти"
+  }
+}

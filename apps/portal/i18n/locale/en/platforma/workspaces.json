@@ -1,0 +1,26 @@
+{
+  "workspaces": {
+    "platforma": {
+      "label": "Platform workspace"
+    },
+    "consumer": {
+      "label": "Customer workspace"
+    },
+    "admin": {
+      "label": "Admin workspace",
+      "items": {
+        "security": {
+          "title": "Security",
+          "users": "Users",
+          "roles-sys": "System roles",
+          "roles-business": "Business roles"
+        },
+        "email": {
+          "title": "E-mail",
+          "service": "Services",
+          "account": "Accounts"
+        }
+      }
+    }
+  }
+}

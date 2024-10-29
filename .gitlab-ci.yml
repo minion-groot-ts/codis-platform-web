@@ -1,0 +1,19 @@
+# https://dev.to/ichintansoni/gitlab-cicd-pipelines-best-practices-for-monorepos-cba
+stages:
+  - triggers
+
+variables:
+  NODE_VERSION: 20.16.0
+  DOCKER_VERSION: 24.0.5
+  DOCKER_HOST: tcp://docker:2376
+  DOCKER_TLS_CERTDIR: "/certs"
+  DOCKER_TLS_VERIFY: 1
+  DOCKER_CERT_PATH: "$DOCKER_TLS_CERTDIR/client"
+
+trigger-portal:
+  stage: triggers
+  trigger:
+    include: apps/portal/.gitlab-ci.yml
+  rules:
+    - changes:
+        - apps/portal/**/*

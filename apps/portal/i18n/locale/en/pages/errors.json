@@ -1,0 +1,29 @@
+{
+  "errors": {
+    "401": {
+      "message": "Unauthorized",
+      "description": "Try again"
+    },
+    "403": {
+      "message": "Forbidden",
+      "description": "It looks like the wrong permissions have been set"
+    },
+    "404": {
+      "message": "Not Found",
+      "description": "It looks like the address is wrong or the page has moved"
+    },
+    "500": {
+      "message": "Internal Server Error",
+      "description": "Try refreshing this page. If the problem persists, contact us"
+    },
+    "503": {
+      "message": "Service Unavailable",
+      "description": "Unfortunately, the service is overloaded. Please try again later"
+    },
+    "504": {
+      "message": "Gateway Timeout",
+      "description": "Try refreshing this page or clear your cache. If the problem persists, contact us"
+    },
+    "action": "Home page"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@codis/tailwind-config",
+  "version": "1.0.0",
+  "private": true,
+  "exports": {
+    ".": "./tailwind.config.ts"
+  },
+  "devDependencies": {
+    "@codis/typescript-config": "workspace:*",
+    "tailwindcss": "^3.4.1",
+    "@nextui-org/theme": "2.2.5"
+  }
+}

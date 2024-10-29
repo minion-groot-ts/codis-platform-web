@@ -1,0 +1,14 @@
+{
+  "name": "@codis/fonts-config",
+  "version": "1.0.0",
+  "private": true,
+  "exports": {
+    ".": "./fonts.config.ts"
+  },
+  "main": "./fonts.config.ts",
+  "devDependencies": {
+    "@codis/typescript-config": "workspace:*",
+    "next": "14.2.3",
+    "typescript": "^5.3.3"
+  }
+}

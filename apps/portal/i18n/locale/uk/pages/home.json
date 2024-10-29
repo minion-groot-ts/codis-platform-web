@@ -1,0 +1,32 @@
+{
+  "home": {
+    "name1": "Codis",
+    "name2": "Platform",
+    "slogan": "екосистема, що забезпечує створення єдиного інформаційного простору та цифровізацію бізнес-процесів у різних сферах діяльності",
+    "signin": "Увійти",
+    "start": "Почати роботу",
+    "signup": "Зареєструватись",
+    "apps": {
+      "eAsset": {
+        "name": "e-Assets",
+        "url": "/"
+      },
+      "eTransport": {
+        "name": "e-Transport",
+        "url": "/"
+      },
+      "eCase": {
+        "name": "e-Case",
+        "url": "/"
+      },
+      "eEnergy": {
+        "name": "e-Energy",
+        "url": "/"
+      },
+      "eGeo": {
+        "name": "e-Geo",
+        "url": "/"
+      }
+    }
+  }
+}

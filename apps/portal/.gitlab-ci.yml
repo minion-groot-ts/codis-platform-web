@@ -1,0 +1,135 @@
+stages:
+  - check
+  - build
+  - test
+  - deploy
+
+variables:
+  APP_NAME: portal
+  APP_IMAGE_NAME: $HARBOR_HOST/$HARBOR_PROJECT/$APP_NAME
+
+check-job:
+  stage: check
+  image: hub.codis.dev/dockerhub/node:$NODE_VERSION-alpine
+  script:
+    - echo "Started job ---> check-${APP_NAME}"
+    - echo "Performing checks like lint, sonar, etc.."
+    - APP_VERSION=v$(npm pkg get version)
+    - BUILD_VERSION=${APP_VERSION//\"}
+    - echo BUILD_VERSION=$BUILD_VERSION >> build.env
+    # - echo IMAGE_TAG_QA=$APP_IMAGE_NAME:$CI_COMMIT_REF_SLUG >> build.env
+    - echo IMAGE_TAG_QA=$APP_IMAGE_NAME:$CI_COMMIT_SHORT_SHA >> build.env
+    - echo IMAGE_TAG_PROD=$APP_IMAGE_NAME:$BUILD_VERSION >> build.env
+    - echo "Checks performed successful. No issues found"
+    - echo "Finished job ---> check-${APP_NAME}"
+  artifacts:
+    reports:
+      dotenv: build.env
+
+build-job:
+  stage: build
+  needs: [check-job]
+  image: hub.codis.dev/dockerhub/docker:$DOCKER_VERSION
+  services:
+    - name: hub.codis.dev/dockerhub/docker:$DOCKER_VERSION-dind
+      alias: docker
+  before_script:
+    - echo $HARBOR_PASSWORD | docker login -u $HARBOR_USERNAME --password-stdin $HARBOR_URL
+  after_script:
+    - docker logout
+  script:
+    - echo "Started job ---> build-${APP_NAME}"
+    - echo "Creating build..."
+    - |
+      if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
+        docker build --build-arg PROJECT=$APP_NAME -t $IMAGE_TAG_PROD .
+        docker tag $IMAGE_TAG_PROD $APP_IMAGE_NAME:latest
+      else
+        docker build --build-arg PROJECT=$APP_NAME -t $IMAGE_TAG_QA .
+      fi
+    - docker image ls
+    - docker image push --all-tags ${APP_IMAGE_NAME}
+    - echo "Build created"
+    - echo "Finished job ---> build-${APP_NAME}"
+  rules:
+    - if: $CI_COMMIT_BRANCH
+      exists:
+        - Dockerfile
+
+test-job:
+  stage: test
+  needs: [build-job]
+  image: hub.codis.dev/dockerhub/node:$NODE_VERSION-alpine
+  script:
+    - echo "Started job ---> test-${APP_NAME}"
+    - echo "Testing build..."
+    - sleep 1 # Just to mimic some on-going work
+    - echo "Tested ---> Passed"
+    - echo "Finished job ---> test-${APP_NAME}"
+
+# https://medium.com/@edgars.rungis/how-to-develop-simple-ci-cd-pipeline-by-using-gitlab-and-argocd-to-deploy-application-on-oci-716432724297
+# https://gist.github.com/NYARAS/8753c4ae52c3e05fd20ba8ebffd06413
+deploy-qa-job:
+  stage: deploy
+  environment: qa
+  needs:
+    - job: check-job
+      artifacts: true
+    - job: test-job
+  variables:
+    GIT_STRATEGY: none
+  image: hub.codis.dev/dockerhub/alpine:3.20.3
+  before_script:
+    - echo "Output from deploy stage"
+    - apk add --no-cache git curl bash coreutils
+    - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+    - mv kustomize /usr/local/bin/
+    - git init
+    - git remote add origin https://${USERNAME}:${PAT_TOKEN}@repo.codis.dev/gitops/codis-platform/codis-platform-argocd.git
+    - git config --global user.email "gitlab@repo.codis.dev"
+    - git config --global user.name "GitLab CI/CD"
+  script:
+    - git checkout -B main
+    - git pull origin main
+    - cd apps/$APP_NAME/envs/qa
+    - kustomize edit set image $IMAGE_TAG_QA
+    - |
+      if ! git diff-index --quiet HEAD; then
+        git commit -am '[skip ci] qa manifest-image update'
+        git push origin main
+      fi
+  rules:
+    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
+
+deploy-production-job:
+  stage: deploy
+  needs:
+    - job: check-job
+      artifacts: true
+    - job: test-job
+  environment: production
+  variables:
+    GIT_STRATEGY: none
+  image: hub.codis.dev/dockerhub/alpine:3.20.3
+  before_script:
+    - echo "Output from deploy stage"
+    - apk add --no-cache git curl bash coreutils
+    - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+    - mv kustomize /usr/local/bin/
+    - git init
+    - git remote add origin https://${USERNAME}:${PAT_TOKEN}@repo.codis.dev/gitops/codis-platform/codis-platform-argocd.git
+    - git config --global user.email "gitlab@repo.codis.dev"
+    - git config --global user.name "GitLab CI/CD"
+  script:
+    - git checkout -B main
+    - git pull origin main
+    - cd apps/$APP_NAME/envs/prod
+    - kustomize edit set image $IMAGE_TAG_PROD
+    - |
+      if ! git diff-index --quiet HEAD; then
+        git commit -am '[skip ci] prod manifest-image update'
+        git push origin main
+      fi
+  only:
+    - main
+  when: manual

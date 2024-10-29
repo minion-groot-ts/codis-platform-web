@@ -1,0 +1,26 @@
+{
+  "workspaces": {
+    "platforma": {
+      "label": "Платформа"
+    },
+    "consumer": {
+      "label": "Клієнти"
+    },
+    "admin": {
+      "label": "Адміністрування",
+      "items": {
+        "security": {
+          "title": "Безпека",
+          "users": "Користувачі",
+          "roles-sys": "Системні ролі",
+          "roles-business": "Бізнес ролі"
+        },
+        "email": {
+          "title": "Електронна пошта",
+          "service": "Сервіси",
+          "account": "Облікові записи"
+        }
+      }
+    }
+  }
+}
